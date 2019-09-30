@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 const dbUrl = "mongodb://localhost/benchmark"
 
-mongoose.connect(dbUrl, {useNewUrlParser: true})
+mongoose.connect(dbUrl, {useNewUrlParser: true, useUnifiedTopology: true})
 
 const db = mongoose.connection
 
