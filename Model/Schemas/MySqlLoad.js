@@ -4,8 +4,7 @@ const Schema = mongoose.Schema
 const MySqlLoadSchema = new Schema(
   {
     time: {type: Number},
-    memory: {type: Number},
-    nRegistrosDescargados: {type: Number}
+    memory: {type: Number}
   }
 )
 
