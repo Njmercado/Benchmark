@@ -19,55 +19,111 @@ router.get('/', async function(req, res, next) {
 
   for (var i = 0; i < n; i++) {
 
-    ms.start()
-    City.findOne().exec((err, result) => {
-      ms.end()
-      loadMeasure(ms.data())
-    })   
+    ms.start(1, null).then(result => {
+
+      return new Promise((resolve, reject) => {
+
+        City.findOne().exec((err, res) => {
+
+          return resolve({
+
+            time: result.time,
+            memory: result.memory
+          })
+        }) 
+      }).then(result => {
+
+        ms.end(result.time, result.memory) 
+
+        loadMeasure({
+          time: ms.data().time,
+          memory: ms.data().memory
+        })
+      })
+    })
+
   }
 
   res.send("Descargado")
-}).get("/multi", (req, res) => {
+}).get("/multi", async (req, res) => {
 
-  var registros = 1
+  var registros = await 1
+  var subData  = []
 
-  n = Math.ceil(Math.log2(n))
+  var iteraciones = Math.ceil(Math.log2(n))
 
-  for (var i = 0; i < n; i++) {
+  for (var i = 0; i < iteraciones; i++) {
 
-    registros = Math.pow(2, i)
+    subData = data.slice(0, Math.pow(2, registros))
 
-    ms.start()
-    City.find().limit(registros).exec((err, result) => {
-      ms.end()
-      loadMultiMeasure(ms.data(), registros)
-    })   
+    ms.start(registros, subData).then(result => {
+
+      return new Promise((resolve, reject) => {
+
+        City.find().limit(registros).exec((err, res) => {
+          return resolve({
+            time: result.time,
+            memory: result.memory,
+            registros: result.registros
+          })
+        })   
+      }).then(result => {
+
+        ms.end(result.time, result.memory)
+
+        loadMultiMeasure({
+          time: ms.data().time,
+          memory: ms.data().memory
+        },
+          result.registros
+        )
+      })
+    })
+
+    registros = registros + 1 
   }
 
 }).post("/", (req, res) => { //Cargar Informacion
 
-  ms.start()
   for (var i = 0; i < n; i++) {
 
-    var add = new City(
-      data[i]
-    )
-    add.save((err, result) => {
-      ms.end()
-      storeMeasure(ms.data())
-      ms.start()
+    ms.start(1, null).then(result => {
+
+      return new Promise((resolve, reject) => {
+
+        var add = new City(
+          data[i]
+        )
+
+        add.save((err, r) =>{
+
+          return resolve({
+
+            time: result.time,
+            memory: result.memory
+          })
+        })
+      })
+    }).then(result => {
+
+      ms.end(result.time, result.memory)
+
+      storeMeasure({
+        time: ms.data().time,
+        memory: ms.data().memory
+      })
     })
   }
 
   res.send("Loaded information.")
 }).post("/multi", async (req,res)=>{
 
-  n = await Math.ceil(Math.log2(n))+1
+  var iteraciones = await Math.ceil(Math.log2(n))+1
   var registros = await 1
 
-  for (var i = 1; i < n; i++) {
+  for (var i = 1; i < iteraciones; i++) {
 
-    var subData = await data.slice(0, Math.ceil(Math.log2(registros))) 
+    var subData = await data.slice(0, Math.pow(2, registros)) 
 
     ms.start(registros, subData).then(result => {
 
@@ -102,7 +158,10 @@ router.get('/', async function(req, res, next) {
 
 const storeMeasure = (data) => {
 
-  const add = new MongoStore(data)
+  const add = new MongoStore({
+    time: data.time,
+    memory: data.memory
+  })
 
   add.save()
 }
