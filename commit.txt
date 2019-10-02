@@ -1,1 +1,5 @@
-Creacion del servidor. Inclusión del modelo para mongo. Creacion del una clase para hacer medición de los recursos
+Otras metricas de evaluación:
+  * Agregué en mongo.js, dentro de routes, la posibilidad de subir varios registros al mismo tiempo, para probar bien la dbOtras metricas de evaluación:
+    - Agregué en mongo.js, dentro de routes, la posibilidad de subir varios registros al mismo tiempo, para probar bien la db.
+  * Agregué otros Schemas, para tener en cuenta el tiempo que tarda en realizar multiples tareas.
+  * Arreglé el problema de asincronidad que tenia.

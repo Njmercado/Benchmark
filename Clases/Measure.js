@@ -5,14 +5,24 @@ class Measure {
     this.time = 0 
   }
 
-  start(){
+  start(registros, data){
+
     this.memory = process.memoryUsage().heapUsed/1024/1024
     this.time = process.hrtime()
+
+    return new Promise((resolve, reject) => {
+      resolve({
+        time: this.time,
+        memory: this.memory,
+        registros: registros,
+        data: data
+      })
+    })
   }
 
-  end(){
-    this.time = process.hrtime(this.time)[1]/1e6
-    this.memory = process.memoryUsage().heapUsed/1024/1024 - this.memory
+  end(time, memory){
+    this.time = process.hrtime(time)[1]/1e6
+    this.memory = process.memoryUsage().heapUsed/1024/1024 - memory
   }
 
   data(){
