@@ -1,4 +1,2 @@
-MySql: 
-  * Resueltos los errores presentados en MySql. No Bulk.
-* Mejora de la presentación de los resultados de los registros, para que sean mejor de visualizar.
-* Cambio del nombre de los archivos de rutas, ya que se van a incluir otros DataSets.
+Otros DataSets.
+  * Inclusión de otros datasets para probar mejor los motores.

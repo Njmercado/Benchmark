@@ -1,4 +1,4 @@
-const mongoose = require("../mongoose.js") 
+const mongoose = require("../Connections/mongooseCityStatus.js") 
 const Schema = mongoose.Schema
 
 const MongoStoreSchema = new Schema(
