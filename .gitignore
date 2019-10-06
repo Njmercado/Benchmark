@@ -58,6 +58,9 @@ typings/
 .env
 
 # next.js build output
+
+#Archivos de resultados
+Results/
 .next
 
 #Archivo de la data

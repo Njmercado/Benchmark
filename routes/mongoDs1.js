@@ -13,7 +13,7 @@ const MongoLoad= require('../Model/Schemas/MongoLoad.js')
 const MongoMultiStore = require('../Model/Schemas/MongoMultiStore.js')
 const MongoMultiLoad= require('../Model/Schemas/MongoMultiLoad.js')
 
-var n = 512*32 //# registro a ser cargados/descargados
+var n = Math.pow(2, 15) //# registro a ser cargados/descargados
 
 router.get('/', async function(req, res, next) {
 
@@ -35,13 +35,9 @@ router.get('/', async function(req, res, next) {
 
         ms.end(result.time, result.memory) 
 
-        loadMeasure({
-          time: ms.data().time,
-          memory: ms.data().memory
-        })
+        loadMeasure(ms.data())
       })
     })
-
   }
 
   res.send("Descargado")
@@ -52,9 +48,10 @@ router.get('/', async function(req, res, next) {
 
   var iteraciones = Math.ceil(Math.log2(n))
 
-  for (var i = 0; i < iteraciones; i++) {
-
-    subData = data.slice(0, Math.pow(2, registros))
+  for (var i = 0; i <= iteraciones; i++) {
+    
+    registros = await Math.pow(2, i)
+    subData = await data.slice(0, registros)
 
     ms.start(registros, subData).then(result => {
 
@@ -71,18 +68,12 @@ router.get('/', async function(req, res, next) {
 
         ms.end(result.time, result.memory)
 
-        loadMultiMeasure({
-          time: ms.data().time,
-          memory: ms.data().memory
-        },
-          result.registros
-        )
+        loadMultiMeasure(ms.data(), result.registros)
       })
     })
-
-    registros = registros + 1 
   }
 
+  res.send("REGISTROS DESCARGADOS, POR FAVOR VERIFIQUE")
 }).post("/", (req, res) => { //Cargar Informacion
 
   for (var i = 0; i < n; i++) {
@@ -108,10 +99,7 @@ router.get('/', async function(req, res, next) {
 
       ms.end(result.time, result.memory)
 
-      storeMeasure({
-        time: ms.data().time,
-        memory: ms.data().memory
-      })
+      storeMeasure(ms.data())
     })
   }
 
@@ -120,10 +108,12 @@ router.get('/', async function(req, res, next) {
 
   var iteraciones = await Math.ceil(Math.log2(n))+1
   var registros = await 1
+  var subData = await []
 
-  for (var i = 1; i < iteraciones; i++) {
-
-    var subData = await data.slice(0, Math.pow(2, registros)) 
+  for (var i = 1; i <= iteraciones; i++) {
+    
+    registros = await Math.pow(2, i)
+    subData = await data.slice(0, registros) 
 
     ms.start(registros, subData).then(result => {
 
@@ -143,14 +133,8 @@ router.get('/', async function(req, res, next) {
 
       ms.end(result.time, result.memory)
 
-      storeMultiMeasure({
-
-        time: ms.data().time,
-        memory: ms.data().memory
-      }, result.registros)  
+      storeMultiMeasure(ms.data(), result.registros)  
     }).catch(err => console.log("ERROR: ", err))
-
-    registros = registros + 1
   }
 
   res.send("Registros multiples cargados")
@@ -158,10 +142,7 @@ router.get('/', async function(req, res, next) {
 
 const storeMeasure = (data) => {
 
-  const add = new MongoStore({
-    time: data.time,
-    memory: data.memory
-  })
+  const add = new MongoStore(data)
 
   add.save()
 }
@@ -190,4 +171,5 @@ const loadMultiMeasure = (data, registros) => {
 
   add.save()
 }
+
 module.exports = router;
