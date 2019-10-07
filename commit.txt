@@ -1,2 +1,7 @@
 Otros DataSets.
   * Inclusión de otros datasets para probar mejor los motores.
+  * Reestructuracion del proyecto para que sea más entendible.
+  * Los DataSets estan ubicados en el root del proyecto para su visualización rapida.
+  * La estrucutura de las bases de datos, Mongo y Mysql, están en:
+    * Model/MySqlDataBases para Mysql
+    * Model/Schemas para Mongodb
