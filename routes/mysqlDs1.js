@@ -7,7 +7,7 @@ const ms = new Measure()
 
 const data = require('../city_inspections.json')
 
-const mysql = require('../Model/mysqlCityStatus.js')
+const mysql = require('../Model/Connections/mysqlCityStatus.js')
 
 const MySqlLoad = require('../Model/Schemas/MySqlLoad.js')
 const MySqlStore= require('../Model/Schemas/MySqlStore.js')
